@@ -4,7 +4,16 @@ from helpers import plot_barplot, plot_treemap
 from pages.tabella_millesimale import resdf
 from helpers import format_currency, authenticate, calculate_expenses
 
-# st.set_page_config(layout="wide")
+
+# Hide Streamlit sidebar on first load
+st.markdown(
+    """
+    <style>
+    [data-testid="stSidebar"] { display: none; }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # Run authentication
 if not authenticate():
