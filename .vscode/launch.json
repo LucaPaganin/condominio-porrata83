@@ -1,0 +1,21 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [    
+        {
+            "name": "Streamlit: condomain.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/.venv/Scripts/streamlit.exe",
+            "cwd": "${workspaceFolder}",
+            "args": ["run", "${workspaceFolder}/condomain.py"],
+            "console": "integratedTerminal",
+            "presentation": {
+                "group": "General",
+                "order": 1
+            }
+        }
+    ]
+}
