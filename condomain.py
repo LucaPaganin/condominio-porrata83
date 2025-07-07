@@ -1,6 +1,6 @@
 
-import os
 import streamlit as st
+from helpers import plot_barplot, plot_treemap
 from pages.tabella_millesimale import resdf
 from helpers import format_currency, authenticate, calculate_expenses
 
@@ -46,20 +46,8 @@ if st.button("Calcola ripartizione spese"):
 
     st.dataframe(expenses_df, use_container_width=True)
 
-    # Horizontal bar plot for 'spese_totali' using plotly
-    import plotly.express as px
-    expenses_df_sorted = expenses_df.sort_values("spese_totali")
-    fig = px.bar(
-        expenses_df_sorted,
-        y=expenses_df_sorted.index.astype(str),
-        x="spese_totali",
-        orientation="h",
-        labels={"spese_totali": "Spese Totali (€)", "index": "Unità Immobiliare"},
-        title="Ripartizione Spese Totali per Unità Immobiliare",
-        color_discrete_sequence=["#1f77b4"]
-    )
-    fig.update_layout(yaxis_title="Unità Immobiliare", xaxis_title="Spese Totali (€)", margin=dict(l=80, r=20, t=60, b=40))
-    st.plotly_chart(fig, use_container_width=True)
+    plot_treemap(expenses_df)
+            
 
     
 
