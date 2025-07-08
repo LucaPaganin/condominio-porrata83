@@ -4,6 +4,13 @@ import datetime
 import uuid
 import streamlit as st
 from streamlit_js_eval import get_page_location, get_browser_language, streamlit_js_eval
+import hashlib
+
+def anonymize_string(input_string):
+    # Use SHA-256 for strong anonymization
+    hash_object = hashlib.sha256(input_string.encode('utf-8'))
+    hashed_string = hash_object.hexdigest()
+    return hashed_string
 
 def collect_session_data():
     session_data = {}
@@ -11,20 +18,27 @@ def collect_session_data():
         session_data["headers"] = dict(st.context.headers)
     except Exception:
         session_data["headers"] = {}
+    # retrieve vars
     stuser = session_data["headers"].get("X-Streamlit-User", "")
-    session_data["query_params"] = {str(k): str(v) for k, v in st.query_params.items()}
-    session_data["id"] = stuser or str(uuid.uuid4())
-    session_data["user_agent"] = session_data["headers"].get("User-Agent")
-    session_data["streamlit_user"] = stuser
-    session_data["language"] = get_browser_language() or "unknown"
-    session_data["origin"] = session_data["headers"].get("Origin", "")
-    session_data["referrer"] = session_data["headers"].get("Referer", "")
-    # Persistent anonymous user id from localStorage
-    anon_id = streamlit_js_eval(
-        js_expressions="localStorage.anon_id || (localStorage.anon_id = crypto.randomUUID())",
-        key="anon_id"
-    )
-    session_data["anon_id"] = anon_id
+    user_agent = session_data["headers"].get("User-Agent", "")
+    cookie = session_data["headers"].get("Cookie", "")
+    language = session_data["language"] = get_browser_language() or "unknown"
+
+    if user_agent and language != "unknown":
+        session_data["query_params"] = {str(k): str(v) for k, v in st.query_params.items()}
+        session_data["id"] = anonymize_string(user_agent) or str(uuid.uuid4())
+        session_data["user_agent"] = user_agent
+        session_data["streamlit_user"] = stuser
+        session_data["language"] = language
+        session_data["origin"] = session_data["headers"].get("Origin", "")
+        session_data["referrer"] = session_data["headers"].get("Referer", "")
+        session_data["cookie"] = cookie
+
+
+        log_visit_to_cosmos(session_data)
+
+
+
     return session_data
 
 
