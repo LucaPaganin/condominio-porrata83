@@ -1,4 +1,5 @@
 
+from pathlib import Path
 import streamlit as st
 from helpers import plot_barplot, plot_treemap
 from pages.tabella_millesimale import resdf
@@ -20,7 +21,18 @@ if not authenticate():
     st.stop()
 
 # Main App
-st.title("Calcolo ripartizione lavori straordinari via Porrata 83")
+st.title("Ripartizione millesimale spese straordinarie")
+
+st.warning(
+    """
+    **Attenzione:** questa applicazione è destinata esclusivamente ai condomini di via Porrata 83.
+    L'accesso non autorizzato è vietato e perseguito a norma di legge.
+    """
+)
+st.markdown(
+    Path("./disclaimer.md").read_text(encoding="utf-8"),
+    unsafe_allow_html=True
+)
 
 roof_expense = st.number_input(
     f"Spesa per il tetto",
