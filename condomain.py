@@ -47,7 +47,6 @@ st.title("Ripartizione millesimale spese straordinarie")
 st.warning(
         """
         **Attenzione:** questa applicazione è destinata esclusivamente ai condomini di via Porrata 83.
-        L'accesso non autorizzato è vietato e perseguito a norma di legge.
         """
     )
 with st.expander("Informazioni sull'applicazione", expanded=True):
