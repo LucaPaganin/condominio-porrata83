@@ -1,6 +1,31 @@
 # --- Cosmos DB visit logger ---
 import os
 import datetime
+import uuid
+import streamlit as st
+from streamlit_js_eval import get_page_location, get_browser_language, streamlit_js_eval
+
+def collect_session_data():
+    session_data = {}
+    try:
+        session_data["headers"] = dict(st.context.headers)
+    except Exception:
+        session_data["headers"] = {}
+    session_data["query_params"] = {str(k): str(v) for k, v in st.query_params.items()}
+    session_data["id"] = st.session_state.get("_session_id", str(uuid.uuid4()))
+    session_data["user_agent"] = session_data["headers"].get("User-Agent")
+    session_data["language"] = get_browser_language() or "unknown"
+    session_data["origin"] = session_data["headers"].get("Origin", "")
+    session_data["referrer"] = session_data["headers"].get("Referer", "")
+    # Persistent anonymous user id from localStorage
+    anon_id = streamlit_js_eval(
+        js_expressions="localStorage.anon_id || (localStorage.anon_id = crypto.randomUUID())",
+        key="anon_id"
+    )
+    session_data["anon_id"] = anon_id
+    return session_data
+
+
 def log_visit_to_cosmos(session_data):
     try:
         from azure.cosmos import CosmosClient

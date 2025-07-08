@@ -2,10 +2,10 @@
 from pathlib import Path
 import uuid
 import streamlit as st
-from streamlit_js_eval import get_page_location, get_geolocation, get_cookie, get_browser_language
+from streamlit_js_eval import get_page_location, get_browser_language
 from helpers import plot_barplot, plot_treemap, log_visit_to_cosmos
 from pages.tabella_millesimale import resdf
-from helpers import format_currency, authenticate, calculate_expenses
+from helpers import format_currency, authenticate, calculate_expenses, collect_session_data
 
 
 # Hide Streamlit sidebar on first load
@@ -19,18 +19,7 @@ st.markdown(
 )
 
 
-
-# Track visits (file and CosmosDB)
-# Collect session data for CosmosDB
-session_data = {}
-try:
-    session_data["headers"] = dict(st.context.headers)
-except Exception:
-    session_data["headers"] = {}
-session_data["query_params"] = {str(k): str(v) for k, v in st.query_params.items()}
-session_data["id"] = st.session_state.get("_session_id", str(uuid.uuid4()))
-session_data["user_agent"] = session_data["headers"].get("User-Agent")
-log_visit_to_cosmos(session_data)
+log_visit_to_cosmos(collect_session_data())
 
 # Run authentication
 if not authenticate():
@@ -48,7 +37,7 @@ st.warning(
     )
 with st.expander("Informazioni sull'applicazione", expanded=True):
     st.markdown(
-        Path("./disclaimer.md").read_text(encoding="utf-8"),
+        Path("./input_data/disclaimer.md").read_text(encoding="utf-8"),
         unsafe_allow_html=True
     )
 
@@ -75,19 +64,14 @@ with cols[0]:
     other_expense = other_expense if iva_included else other_expense * (1 + iva_val)
 
 with cols[1]:
-    base_url = get_page_location()["origin"]
+    mdcontent = Path("./input_data/notes.md").read_text(encoding="utf-8")
+    try:
+        base_url = get_page_location()["origin"]
+    except Exception:
+        base_url = ""
     ditte_url = f"{base_url.rstrip('/')}/ditte_manutenzione" if base_url else "ditte_manutenzione"
-    st.markdown(
-        f"""
-        **Nota:** le spese sono calcolate in base ai millesimi di proprietà.
-        Le spese per il tetto sono divise in 1/3 a carico degli attici e 2/3 a carico degli altri.
-        Le altre spese sono ripartite tra tutti i condomini.
-        Qui trovate una pagina con l'elenco delle [ditte di manutenzione e ristrutturazione]({ditte_url}) 
-        che ho reperito con una breve ricerca online.
-        Qui trovate il link alla [tabella millesimale]({base_url.rstrip('/')}/tabella_millesimale)
-        """
-    )
-
+    mdcontent = mdcontent.format(ditte_url=ditte_url, base_url=base_url.rstrip('/'))
+    st.markdown(mdcontent)
 
 
 if st.button("Calcola ripartizione spese"):
