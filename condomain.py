@@ -1,11 +1,19 @@
-
 from pathlib import Path
 import uuid
 import streamlit as st
 from streamlit_js_eval import get_page_location, get_browser_language
-from helpers import plot_barplot, plot_treemap, log_visit_to_cosmos
 from pages.tabella_millesimale import resdf
-from helpers import format_currency, authenticate, calculate_expenses, collect_session_data
+try:
+    from helpers import (
+        format_currency, 
+        plot_barplot, plot_treemap, log_visit_to_cosmos,
+        authenticate, 
+        calculate_expenses, 
+        collect_session_data
+    )
+except ImportError:
+    import traceback
+    print(traceback.format_exc())
 
 
 # Hide Streamlit sidebar on first load
