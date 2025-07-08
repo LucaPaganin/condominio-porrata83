@@ -89,6 +89,7 @@ def plot_treemap(df_plot):
         title="Ripartizione Spese Totali per famiglia (Treemap)"
     )
     fig.update_traces(textinfo="label+value")
+    fig.update_layout(height=700)  # Increased height
     st.plotly_chart(fig, use_container_width=True)
 
 
