@@ -27,7 +27,11 @@ st.markdown(
 )
 
 session_data = collect_session_data()
-if "streamlit_user" in session_data and session_data["streamlit_user"]:
+if (
+        "streamlit_user" in session_data 
+        and session_data["streamlit_user"] 
+        or (session_data.get("origin", "").startswith("http://Localhost") and session_data.get("user_agent"))
+    ):
     log_visit_to_cosmos(session_data)
 
 # Run authentication
