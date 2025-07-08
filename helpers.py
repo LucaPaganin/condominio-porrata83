@@ -46,24 +46,9 @@ def log_visit_to_cosmos(session_data):
     # Add timestamp
     session_data["timestamp"] = datetime.datetime.utcnow().isoformat()
     # Insert
-    container.create_item(session_data)
+    container.upsert_item(session_data)
     return True
-# --- Simple visit counter ---
-import threading
-def increment_visit_counter(filepath="visit_count.txt"):
-    lock = threading.Lock()
-    with lock:
-        try:
-            with open(filepath, "r+") as f:
-                count = int(f.read().strip() or 0) + 1
-                f.seek(0)
-                f.write(str(count))
-                f.truncate()
-        except FileNotFoundError:
-            with open(filepath, "w") as f:
-                count = 1
-                f.write(str(count))
-    return count
+
 # --- Plotting functions for Streamlit ---
 import plotly.express as px
 import streamlit as st
