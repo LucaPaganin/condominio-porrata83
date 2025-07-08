@@ -11,10 +11,11 @@ def collect_session_data():
         session_data["headers"] = dict(st.context.headers)
     except Exception:
         session_data["headers"] = {}
+    stuser = session_data["headers"].get("X-Streamlit-User", "")
     session_data["query_params"] = {str(k): str(v) for k, v in st.query_params.items()}
-    session_data["id"] = st.session_state.get("_session_id", str(uuid.uuid4()))
+    session_data["id"] = stuser or str(uuid.uuid4())
     session_data["user_agent"] = session_data["headers"].get("User-Agent")
-    session_data["streamlit_user"] = session_data["headers"].get("X-Streamlit-User", "")
+    session_data["streamlit_user"] = stuser
     session_data["language"] = get_browser_language() or "unknown"
     session_data["origin"] = session_data["headers"].get("Origin", "")
     session_data["referrer"] = session_data["headers"].get("Referer", "")
