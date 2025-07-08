@@ -1,5 +1,5 @@
 from pathlib import Path
-import uuid
+import uuid, sys
 import streamlit as st
 from streamlit_js_eval import get_page_location, get_browser_language
 from pages.tabella_millesimale import resdf
@@ -14,7 +14,7 @@ try:
 except ImportError:
     import traceback
     print(traceback.format_exc())
-
+    sys.exit(1)
 
 # Hide Streamlit sidebar on first load
 st.markdown(
@@ -25,6 +25,18 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+if st.secrets.get("maintenance_mode", False):
+    st.warning(
+        """
+        **Modalità di manutenzione attiva.** L'applicazione è temporaneamente non disponibile.
+        **Siamo in attesa della conferma della tabella millesimale dall'amministratore**. 
+        """
+    )
+    st.stop()
+
+
+
 
 session_data = collect_session_data()
 if (
