@@ -2,7 +2,7 @@
 from pathlib import Path
 import uuid
 import streamlit as st
-from helpers import plot_barplot, plot_treemap, increment_visit_counter, log_visit_to_cosmos
+from helpers import plot_barplot, plot_treemap, log_visit_to_cosmos
 from pages.tabella_millesimale import resdf
 from helpers import format_currency, authenticate, calculate_expenses
 
@@ -83,7 +83,12 @@ if st.button("Calcola ripartizione spese"):
 
     st.dataframe(expenses_df, use_container_width=True)
 
-    plot_treemap(expenses_df)
+    # Plots in tabs (no full page reload)
+    tab1, tab2 = st.tabs(["Treemap", "Barplot"])
+    with tab1:
+        plot_treemap(expenses_df)
+    with tab2:
+        plot_barplot(expenses_df)
             
 
     

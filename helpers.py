@@ -63,7 +63,14 @@ def plot_barplot(df_plot):
         color="nominativo",
         color_discrete_map=color_map
     )
-    fig.update_layout(height=bar_height, showlegend=False)
+    fig.update_layout(
+        height=bar_height,
+        showlegend=False,
+        xaxis_showgrid=True,
+        yaxis_showgrid=True,
+        xaxis_gridcolor="#cccccc",
+        yaxis_gridcolor="#cccccc"
+    )
     st.plotly_chart(fig, use_container_width=True)
 
 def plot_treemap(df_plot):
