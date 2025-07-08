@@ -17,8 +17,11 @@ qr.make(fit=True)
 # Create QR image
 qr_img = qr.make_image(fill_color="black", back_color="white").convert("RGB")
 
+password = "appfutili"
+# password = input("Enter the password to display in the QR code: ")
+
 # Text to add
-text = "Scan Me"
+text = f"{data}\npassword: {password}"
 
 # Load default font
 # You can specify a TTF font file here if you want a different style
@@ -31,7 +34,7 @@ except IOError:
 qr_width, qr_height = qr_img.size
 
 # Create new image with extra height for text
-text_height = 40
+text_height = 80
 new_img = Image.new("RGB", (qr_width, qr_height + text_height), "white")
 
 # Paste QR code into new image
