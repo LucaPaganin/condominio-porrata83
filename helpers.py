@@ -1,3 +1,42 @@
+# --- Cosmos DB visit logger ---
+import os
+import datetime
+def log_visit_to_cosmos(session_data):
+    try:
+        from azure.cosmos import CosmosClient
+    except ImportError:
+        return False
+    # Get credentials from Streamlit secrets or env
+    url = st.secrets.get("cosmosdb_url") or os.environ.get("COSMOSDB_URL")
+    key = st.secrets.get("cosmosdb_key") or os.environ.get("COSMOSDB_KEY")
+    db_name = st.secrets.get("cosmosdb_db") or os.environ.get("COSMOSDB_DB")
+    container_name = st.secrets.get("cosmosdb_container") or os.environ.get("COSMOSDB_CONTAINER")
+    if not all([url, key, db_name, container_name]):
+        return False
+    client = CosmosClient(url, credential=key)
+    db = client.get_database_client(db_name)
+    container = db.get_container_client(container_name)
+    # Add timestamp
+    session_data["timestamp"] = datetime.datetime.utcnow().isoformat()
+    # Insert
+    container.create_item(session_data)
+    return True
+# --- Simple visit counter ---
+import threading
+def increment_visit_counter(filepath="visit_count.txt"):
+    lock = threading.Lock()
+    with lock:
+        try:
+            with open(filepath, "r+") as f:
+                count = int(f.read().strip() or 0) + 1
+                f.seek(0)
+                f.write(str(count))
+                f.truncate()
+        except FileNotFoundError:
+            with open(filepath, "w") as f:
+                count = 1
+                f.write(str(count))
+    return count
 # --- Plotting functions for Streamlit ---
 import plotly.express as px
 import streamlit as st

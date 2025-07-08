@@ -1,7 +1,8 @@
 
 from pathlib import Path
+import uuid
 import streamlit as st
-from helpers import plot_barplot, plot_treemap
+from helpers import plot_barplot, plot_treemap, increment_visit_counter, log_visit_to_cosmos
 from pages.tabella_millesimale import resdf
 from helpers import format_currency, authenticate, calculate_expenses
 
@@ -16,9 +17,24 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+
+
+# Track visits (file and CosmosDB)
+# Collect session data for CosmosDB
+session_data = {}
+try:
+    session_data["headers"] = dict(st.context.headers)
+except Exception:
+    session_data["headers"] = {}
+session_data["query_params"] = st.query_params
+session_data["session_id"] = st.session_state.get("_session_id", str(uuid.uuid4()))
+session_data["user_agent"] = session_data["headers"].get("User-Agent")
+log_visit_to_cosmos(session_data)
+
 # Run authentication
 if not authenticate():
     st.stop()
+
 
 # Main App
 st.title("Ripartizione millesimale spese straordinarie")
