@@ -17,8 +17,7 @@ qr.make(fit=True)
 # Create QR image
 qr_img = qr.make_image(fill_color="black", back_color="white").convert("RGB")
 
-password = "appfutili"
-# password = input("Enter the password to display in the QR code: ")
+password = input("Enter the password to display in the QR code: ")
 
 # Text to add
 text = f"{data}\npassword: {password}"
